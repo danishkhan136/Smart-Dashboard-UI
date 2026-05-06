@@ -1,10 +1,11 @@
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";        // ← 1. Import here
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./LoginSignup.css";
 import PakFlag from "./assets/Flag_of_Pakistan.svg";
 
 export default function LoginSignup() {
-  const navigate = useNavigate();                      // ← 2. Add here, inside component
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("login");
   const formInnerRef = useRef(null);
@@ -23,33 +24,58 @@ export default function LoginSignup() {
 
   const goToSignup = () => {
     setActiveTab("signup");
-    formInnerRef.current.style.marginLeft = "-100%";
-    titleTextRef.current.style.marginLeft = "-100%";
+    if (formInnerRef.current) formInnerRef.current.style.marginLeft = "-100%";
+    if (titleTextRef.current) titleTextRef.current.style.marginLeft = "-100%";
   };
 
   const goToLogin = () => {
     setActiveTab("login");
-    formInnerRef.current.style.marginLeft = "0%";
-    titleTextRef.current.style.marginLeft = "0%";
+    if (formInnerRef.current) formInnerRef.current.style.marginLeft = "0%";
+    if (titleTextRef.current) titleTextRef.current.style.marginLeft = "0%";
   };
 
-  const handleLoginSubmit = () => {               // ← 3. Updated function
+  const handleLoginSubmit = async () => {
     const errors = {};
     if (!loginEmail) errors.email = true;
     if (!loginPassword) errors.password = true;
     setLoginErrors(errors);
+
     if (Object.keys(errors).length === 0) {
-      navigate("/dashboard");                      // ← navigates to dashboard
+      try {
+        const params = new URLSearchParams();
+        params.append("username", loginEmail);
+        params.append("password", loginPassword);
+
+        const response = await axios.post("http://127.0.0.1:8000/auth/login", params);
+        localStorage.setItem("token", response.data.access_token);
+        localStorage.setItem("username", loginEmail);
+        navigate("/dashboard");
+      } catch (err) {
+        alert(err.response?.data?.detail || "Login failed");
+      }
     }
   };
 
-  const handleSignupSubmit = () => {
+  const handleSignupSubmit = async () => {
     const errors = {};
     if (!signupEmail) errors.email = true;
     if (!signupPassword) errors.password = true;
     if (!signupConfirm || signupConfirm !== signupPassword) errors.confirm = true;
     setSignupErrors(errors);
-    if (Object.keys(errors).length === 0) alert("Signed up successfully!");
+
+    if (Object.keys(errors).length === 0) {
+      try {
+        await axios.post("http://127.0.0.1:8000/auth/signup", {
+          username: signupEmail,
+          password: signupPassword,
+          role: "user" // Default role
+        });
+        alert("Signed up successfully! Now please login.");
+        goToLogin();
+      } catch (err) {
+        alert(err.response?.data?.detail || "Signup failed");
+      }
+    }
   };
 
   const isLogin = activeTab === "login";

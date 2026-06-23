@@ -245,26 +245,6 @@ Handles application routes.
 
 ---
 
-## 📸 Screenshots
-
-Add your project screenshots here after uploading images to your repository.
-
-```md
-![Login Page](./screenshots/login.png)
-![Dashboard](./screenshots/dashboard.png)
-```
-
-Recommended screenshots:
-
-- Login page
-- Signup page
-- Dashboard home
-- Sidebar expanded view
-- Unit detail page
-- Profile page
-
----
-
 ## 📦 Available Scripts
 
 In the project directory, you can run:
@@ -333,7 +313,7 @@ Possible future improvements for this project:
 ## 👨‍💻 Author
 
 **Danish Khan**  
-Software Engineering Student  
+Software Engineering 
 Frontend / MERN Stack Developer
 
 GitHub: [@danishkhan136](https://github.com/danishkhan136)
